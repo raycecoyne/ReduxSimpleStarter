@@ -1,15 +1,34 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import SearchBar from './components/searchbar';
+import VideoList from './components/video_list';
+import YTSearch from 'youtube-api-search';
+import {KEY_YOUTUBE} from "./components/keys.js"
 
-import App from './components/app';
-import reducers from './reducers';
 
-const createStoreWithMiddleware = applyMiddleware()(createStore);
+//create new component. Should produce HTML
+class App extends Component {
+    constructor(props){
+        super(props);
+        this.state = {videos: []};
+        YTSearch(
+            {key: KEY_YOUTUBE, term: 'surfboards'}, 
+            //(videos)=>{this.setState({videos:videos});}
+            (videos)=>{this.setState({videos});}
+        );
+    }
 
-ReactDOM.render(
-  <Provider store={createStoreWithMiddleware(reducers)}>
-    <App />
-  </Provider>
-  , document.querySelector('.container'));
+    render() {
+        
+        //Passing props from parent to child via jsx tag
+        return (
+            <div>
+                <SearchBar />
+                <VideoList videos={this.state.videos} />
+            </div>
+        );
+    }
+}
+
+//take component html and add to DOM
+ReactDOM.render(<App />, document.querySelector('.container'));
